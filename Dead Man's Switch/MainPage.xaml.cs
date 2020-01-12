@@ -1,23 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Devices.Sensors;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Media.Playback;
+using Windows.System.Display;
 using Windows.UI.Input.Preview.Injection;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -34,6 +23,14 @@ namespace Dead_Man_s_Switch
         private DateTime _expireTime = DateTime.MinValue;
         private string _timeRemaining;
         private InputInjector _injector = InputInjector.TryCreate();
+        private TimeSpan _extensionTime = TimeSpan.FromMinutes(10);
+        private DisplayRequest _displayRequest;
+
+        private TimeSpan ExtensionTime
+        {
+            get => _extensionTime;
+            set { SetProperty(ref _extensionTime, value);  }
+        }
 
         private string TimeRemaining
         {
@@ -57,11 +54,12 @@ namespace Dead_Man_s_Switch
             _timer.Interval = TimeSpan.FromSeconds(.1d);
             _timer.Tick += Timer_Tick;
             _timer.Start();
+            _displayRequest = new DisplayRequest();
         }
 
         private void ResetExpire()
         {
-            if (_expireTime != DateTime.MinValue) _expireTime = DateTime.Now.AddMinutes(10);
+            if (_expireTime != DateTime.MinValue) _expireTime = DateTime.Now.Add(ExtensionTime);
         }
 
         private void Timer_Tick(object sender, object e)
@@ -76,6 +74,7 @@ namespace Dead_Man_s_Switch
                         }
                     });
                 _expireTime = DateTime.MinValue;
+                _displayRequest.RequestRelease();
             }
 
             if (_expireTime == DateTime.MinValue)
@@ -115,14 +114,15 @@ namespace Dead_Man_s_Switch
             {
                 _expireTime = DateTime.MaxValue;
                 ResetExpire();
+                _displayRequest.RequestActive();
             }
             else
             {
                 _expireTime = DateTime.MinValue;
+                _displayRequest.RequestRelease();
             }
         }
-
-        private void Reset_Clicked(object sender, RoutedEventArgs e)
+        private void Reset_Clicked(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
         {
             ResetExpire();
         }
@@ -169,5 +169,6 @@ namespace Dead_Man_s_Switch
         }
         #endregion
 
+ 
     }
 }

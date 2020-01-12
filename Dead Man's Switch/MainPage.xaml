@@ -17,8 +17,8 @@
             <TextBlock Tapped="Reset_Clicked" Text="{x:Bind Path=TimeRemaining, Mode=OneWay}"></TextBlock>
         </Viewbox>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1">
+            <TimePicker ClockIdentifier="24HourClock" Time="{x:Bind Path=ExtensionTime, Mode=TwoWay}" />
             <Button Content="Enable/Disable" Click="Enable_Clicked" />
-            <Button Content="Reset Timer" Click="Reset_Clicked"/>
         </StackPanel>
     </Grid>
 </Page>

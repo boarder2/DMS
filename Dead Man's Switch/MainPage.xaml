@@ -1,0 +1,24 @@
+﻿<Page
+    x:Class="Dead_Man_s_Switch.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Dead_Man_s_Switch"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Viewbox Grid.Row="0">
+            <TextBlock Tapped="Reset_Clicked" Text="{x:Bind Path=TimeRemaining, Mode=OneWay}"></TextBlock>
+        </Viewbox>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Grid.Row="1">
+            <Button Content="Enable/Disable" Click="Enable_Clicked" />
+            <Button Content="Reset Timer" Click="Reset_Clicked"/>
+        </StackPanel>
+    </Grid>
+</Page>

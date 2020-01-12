@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Windows.Devices.Sensors;
+using Windows.Graphics.Display;
 using Windows.System.Display;
 using Windows.UI.Input.Preview.Injection;
 using Windows.UI.Xaml;
@@ -25,11 +26,12 @@ namespace Dead_Man_s_Switch
         private InputInjector _injector = InputInjector.TryCreate();
         private TimeSpan _extensionTime = TimeSpan.FromMinutes(10);
         private DisplayRequest _displayRequest;
+        private BrightnessOverride _brightnessOverride;
 
         private TimeSpan ExtensionTime
         {
             get => _extensionTime;
-            set { SetProperty(ref _extensionTime, value);  }
+            set { SetProperty(ref _extensionTime, value); }
         }
 
         private string TimeRemaining
@@ -55,6 +57,8 @@ namespace Dead_Man_s_Switch
             _timer.Tick += Timer_Tick;
             _timer.Start();
             _displayRequest = new DisplayRequest();
+            _brightnessOverride = BrightnessOverride.GetForCurrentView();
+            _brightnessOverride.SetBrightnessLevel(0.0d, DisplayBrightnessOverrideOptions.None);
         }
 
         private void ResetExpire()
@@ -75,6 +79,7 @@ namespace Dead_Man_s_Switch
                     });
                 _expireTime = DateTime.MinValue;
                 _displayRequest.RequestRelease();
+                _brightnessOverride.StopOverride();
             }
 
             if (_expireTime == DateTime.MinValue)
@@ -115,11 +120,13 @@ namespace Dead_Man_s_Switch
                 _expireTime = DateTime.MaxValue;
                 ResetExpire();
                 _displayRequest.RequestActive();
+                _brightnessOverride.StartOverride();
             }
             else
             {
                 _expireTime = DateTime.MinValue;
                 _displayRequest.RequestRelease();
+                _brightnessOverride.StopOverride();
             }
         }
         private void Reset_Clicked(object sender, Windows.UI.Xaml.Input.TappedRoutedEventArgs e)
@@ -169,6 +176,6 @@ namespace Dead_Man_s_Switch
         }
         #endregion
 
- 
+
     }
 }
